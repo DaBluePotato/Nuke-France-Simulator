@@ -1,0 +1,660 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#10101b">
+<title>Nuke France Simulator</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Space+Grotesk:wght@400;500;600;700&display=swap');
+:root{color-scheme:dark;--bg:#10101b;--panel:#191928;--panel2:#202035;--line:#30304a;--text:#f4f2ff;--muted:#a19fb8;--purple:#a889ff;--blue:#6ecbff;--pink:#ff82bd;--green:#73e6b1;--gold:#ffd978}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(ellipse at 50% -18%,#282044 0,transparent 58%),var(--bg);color:var(--text);font-family:'Space Grotesk',sans-serif;min-height:100vh}
+button{font:inherit;color:inherit;cursor:pointer}button:disabled{opacity:.42;cursor:not-allowed;filter:saturate(.45)}
+.shell{max-width:1220px;margin:auto;padding:20px 24px 48px}.topbar{display:flex;align-items:center;justify-content:space-between;gap:14px;margin-bottom:18px}.brand{display:flex;align-items:center;gap:12px}.brand-mark{display:grid;place-items:center;width:44px;height:44px;border-radius:14px;background:linear-gradient(145deg,#a889ff,#6351cb);font-size:23px;box-shadow:0 6px 24px #a889ff42}.brand h1{font-size:18px;line-height:1.1;margin:0;letter-spacing:-.6px}.brand small{color:var(--muted);font-size:11px;letter-spacing:1.5px;text-transform:uppercase}.top-actions{display:flex;gap:8px}.icon-btn,.save-pill{background:var(--panel);border:1px solid var(--line);border-radius:11px;padding:9px 12px;color:var(--muted);font-size:12px}.icon-btn:hover,.save-pill:hover{border-color:var(--purple);color:var(--text)}
+.currency-row{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:18px}.currency{display:flex;align-items:center;gap:12px;padding:13px 15px;background:linear-gradient(135deg,#1d1d30,#181826);border:1px solid var(--line);border-radius:14px;min-width:0}.currency-icon{font-size:20px}.currency-label{font-size:10px;text-transform:uppercase;letter-spacing:1px;color:var(--muted)}.currency-value{font-size:19px;font-weight:700;letter-spacing:-.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.currency-sub{margin-left:auto;text-align:right;font:11px 'DM Mono',monospace;color:var(--muted)}
+.dimension-strip{display:flex;align-items:center;gap:9px;margin:0 0 16px;color:var(--muted);font-size:12px}.dimension-strip strong{color:var(--text)}.dimension-dot{width:7px;height:7px;border-radius:100%;background:var(--green);box-shadow:0 0 10px var(--green)}
+.tabs{display:flex;gap:5px;border-bottom:1px solid var(--line);margin-bottom:20px;overflow-x:auto}.tab{background:none;border:0;color:var(--muted);padding:11px 15px 13px;font-weight:600;white-space:nowrap;border-bottom:2px solid transparent}.tab:hover{color:var(--text)}.tab.active{color:var(--purple);border-color:var(--purple)}
+.view{display:none}.view.active{display:block}.grid-main{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(270px,.7fr);gap:16px}.card{background:linear-gradient(160deg,#1c1c2d,#171723);border:1px solid var(--line);border-radius:18px;padding:20px}.card-head{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:16px}.card h2,.card h3{margin:0;letter-spacing:-.45px}.card h2{font-size:17px}.card h3{font-size:14px}.eyebrow{font-size:10px;letter-spacing:1.4px;text-transform:uppercase;color:var(--muted)}.tag{border:1px solid #494163;border-radius:99px;color:var(--purple);font-size:10px;padding:5px 9px;white-space:nowrap}
+.play-card{min-height:350px;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;position:relative;overflow:hidden;background:radial-gradient(ellipse at 50% 60%,#393054 0,transparent 55%),linear-gradient(160deg,#1d1b2e,#171723)}.play-card:before,.play-card:after{content:"";position:absolute;width:3px;height:3px;border-radius:50%;background:#fff;opacity:.5;box-shadow:100px 20px #fff,230px 90px #fff,-160px 35px #fff,-230px 180px #fff,180px -30px #fff,-70px 230px #fff}.mascot{font-size:76px;line-height:1;margin:10px 0 14px;filter:drop-shadow(0 14px 14px #0006);animation:float 3s ease-in-out infinite;user-select:none}.mascot.bump{animation:bump .3s ease}.play-card h2{font-size:23px}.play-card p{color:var(--muted);font-size:13px;margin:7px 0 16px}.primary{border:0;border-radius:12px;padding:12px 18px;font-weight:700;background:linear-gradient(135deg,#a889ff,#7659e8);box-shadow:0 7px 20px #8268e73d;transition:.15s}.primary:hover{transform:translateY(-2px);filter:brightness(1.1)}.secondary{background:var(--panel2);border:1px solid var(--line);border-radius:10px;padding:9px 12px;font-weight:600}.secondary:hover{border-color:var(--purple)}.full{width:100%}.stats-stack{display:grid;gap:12px}.stat-line{display:flex;justify-content:space-between;gap:10px;padding:10px 0;border-bottom:1px solid #ffffff0b;font-size:12px}.stat-line:last-child{border:0}.stat-line span:first-child{color:var(--muted)}.stat-line strong{font:12px 'DM Mono',monospace;text-align:right}.progress-wrap{height:8px;background:#10101b;border-radius:99px;overflow:hidden;margin:12px 0 6px}.progress{height:100%;background:linear-gradient(90deg,var(--purple),var(--blue));border-radius:99px;transition:width .3s}.hint{font-size:11px;color:var(--muted);line-height:1.55}.section-title{display:flex;align-items:end;justify-content:space-between;margin:3px 0 13px;gap:10px}.section-title h2{font-size:19px;margin:0}.section-title p{margin:4px 0 0;font-size:12px;color:var(--muted)}.shop-grid,.upgrade-grid,.dim-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:11px}.item{background:linear-gradient(145deg,#1d1d30,#181825);border:1px solid var(--line);border-radius:15px;padding:15px;position:relative}.item:hover{border-color:#666084}.item-top{display:flex;align-items:center;gap:10px;margin-bottom:10px}.item-icon{font-size:25px}.item-title{font-size:14px;font-weight:700}.item-desc{font-size:11px;color:var(--muted);line-height:1.5;margin:6px 0 12px;min-height:30px}.item-meta{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:10px;font-size:11px}.item-meta span{color:var(--muted)}.cost{font:11px 'DM Mono',monospace;color:var(--gold)}.item .secondary{font-size:11px;padding:8px 10px}.owned{color:var(--green)!important;font-weight:700}.nuke-locked{padding:35px;text-align:center}.nuke-locked .lock{font-size:42px}.empty{padding:26px;border:1px dashed #41415c;border-radius:14px;color:var(--muted);text-align:center;font-size:13px;line-height:1.6}
+.prestige-banner{background:linear-gradient(120deg,#30234c,#1c2440);border:1px solid #66519b;padding:19px;border-radius:16px;margin-bottom:14px;display:flex;align-items:center;justify-content:space-between;gap:16px}.prestige-banner h2{font-size:18px;margin:0 0 5px}.prestige-banner p{font-size:12px;color:#c1b6df;margin:0}.shard-preview{font-size:24px;font-weight:700;color:var(--gold);white-space:nowrap}.achievement-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}.achievement{display:flex;align-items:center;gap:10px;background:#ffffff05;border:1px solid var(--line);border-radius:12px;padding:11px}.achievement.locked{opacity:.45;filter:grayscale(1)}.achievement .badge{font-size:21px}.achievement strong{font-size:12px}.achievement small{display:block;color:var(--muted);font-size:10px;margin-top:3px}.dimension-card{cursor:pointer;transition:.15s}.dimension-card.selected{border-color:var(--purple);box-shadow:0 0 0 1px #a889ff33}.dimension-card .dim-title{display:flex;align-items:center;gap:9px;font-weight:700}.dimension-card .dim-icon{font-size:25px}.floating{position:fixed;pointer-events:none;z-index:10;font-weight:700;color:var(--green);text-shadow:0 2px 8px #000;font-size:15px;animation:rise .85s ease-out forwards}.toast{position:fixed;bottom:20px;left:50%;transform:translate(-50%,20px);background:#29283e;border:1px solid #575475;box-shadow:0 10px 30px #0008;padding:11px 16px;border-radius:12px;font-size:12px;opacity:0;transition:.25s;z-index:20;pointer-events:none;max-width:90vw;text-align:center}.toast.show{opacity:1;transform:translate(-50%,0)}.modal-backdrop{display:none;position:fixed;inset:0;background:#080811c9;z-index:30;place-items:center;padding:20px}.modal-backdrop.show{display:grid}.modal{max-width:420px;width:100%;background:var(--panel);border:1px solid var(--line);padding:22px;border-radius:17px}.modal h2{margin:0 0 8px}.modal p{color:var(--muted);font-size:13px;line-height:1.55}.modal-actions{display:flex;justify-content:flex-end;gap:8px;margin-top:18px}.fineprint{text-align:center;color:#74728c;font-size:10px;margin-top:25px}
+.purchase-card{margin-bottom:13px;padding:14px 18px}.purchase-card .card-head{margin-bottom:10px}.purchase-modes,.shop-categories{display:flex;flex-wrap:wrap;gap:7px}.purchase-mode{font-size:11px;padding:7px 11px}.purchase-mode.active,.shop-tab.active{color:var(--purple);border-color:var(--purple);background:#a889ff14}.shop-categories{border-bottom:1px solid var(--line);margin:0 0 16px}.shop-tab{background:none;border:0;border-bottom:2px solid transparent;color:var(--muted);padding:10px 13px 12px;font-weight:600;white-space:nowrap}.shop-tab:hover{color:var(--text)}.shop-panel{display:none}.shop-panel.active{display:block}.upgrade-effect{color:var(--blue);font-size:11px;line-height:1.5;margin:8px 0}.lifetime-stats{display:grid;grid-template-columns:repeat(5,minmax(0,1fr))}
+.menu-wrap{position:relative}.menu-wrap>summary{list-style:none}.menu-wrap>summary::-webkit-details-marker{display:none}.menu-panel{position:absolute;z-index:25;right:0;top:calc(100% + 8px);width:230px;padding:14px;background:var(--panel);border:1px solid var(--line);border-radius:13px;box-shadow:0 12px 30px #0008}.menu-panel label{display:block;font-size:11px;color:var(--muted);margin-bottom:7px}.menu-panel select{width:100%;padding:9px 10px;border-radius:9px;border:1px solid var(--line);background:var(--panel2);color:var(--text);font:inherit;font-size:12px}.menu-panel .hint{margin:9px 0 0}
+body[data-theme="alternate"]{--purple:#ff86c8;--blue:#86e6f4}body[data-theme="dino"]{--purple:#8ce28f;--blue:#f8cc6f}body[data-theme="cyber"]{--purple:#5fffe1;--blue:#7e85ff}body[data-theme="cosmic"]{--purple:#d58cff;--blue:#78a3ff}
+@keyframes rise{to{transform:translateY(-70px);opacity:0}}@keyframes float{50%{transform:translateY(-8px) rotate(2deg)}}@keyframes bump{50%{transform:scale(1.23) rotate(-7deg)}}@media(max-width:720px){.shell{padding:14px 13px 35px}.brand h1{font-size:15px}.brand-mark{width:38px;height:38px}.currency-row{gap:6px}.currency{padding:10px 8px;gap:7px;border-radius:12px;display:block}.currency-icon{font-size:15px;float:left;margin-right:5px}.currency-label{font-size:8px;letter-spacing:.6px}.currency-value{font-size:15px;clear:both;padding-top:5px}.currency-sub{font-size:9px;margin-top:3px;text-align:left}.grid-main{grid-template-columns:1fr}.play-card{min-height:300px}.shop-grid,.upgrade-grid,.dim-grid{grid-template-columns:1fr}.achievement-list{grid-template-columns:1fr}.card{padding:16px}.tab{padding:10px 12px;font-size:12px}.dimension-strip{font-size:11px}.save-pill{display:none}.prestige-banner{align-items:flex-start;flex-direction:column}.shard-preview{font-size:20px}.lifetime-stats{grid-template-columns:repeat(2,minmax(0,1fr))}.shop-tab{font-size:11px;padding:9px 9px 11px}}@media(min-width:721px) and (max-width:950px){.grid-main{grid-template-columns:1fr 1fr}.shop-grid,.upgrade-grid,.dim-grid{grid-template-columns:1fr 1fr}.lifetime-stats{grid-template-columns:repeat(3,minmax(0,1fr))}}
+</style>
+</head>
+<body>
+<div class="shell">
+  <header class="topbar">
+    <div class="brand"><div class="brand-mark">☄️</div><div><h1>NUKE FRANCE SIMULATOR</h1><small>totally fictional. very silly.</small></div></div>
+    <div class="top-actions"><span class="save-pill" id="saveStatus">● Saved</span><button class="icon-btn" id="soundBtn" aria-label="Toggle sound">🔇 Sound off</button><details class="menu-wrap"><summary class="icon-btn">☰ Menu</summary><div class="menu-panel"><label for="languageSelect">Language</label><select id="languageSelect"><option value="en">English</option><option value="fr">French</option><option value="microwave">Microwave</option></select><p class="hint">Prices are 50% higher before your first Nuke unlock and 100% higher afterward.</p></div></details></div>
+  </header>
+  <section class="currency-row" aria-label="Currencies">
+    <div class="currency"><span class="currency-icon">💵</span><div><div class="currency-label">Money</div><div class="currency-value" id="money">0</div></div><div class="currency-sub" id="moneyRate">+0 / sec</div></div>
+    <div class="currency"><span class="currency-icon">🇫🇷</span><div><div class="currency-label">France Nuked</div><div class="currency-value" id="france">0</div></div><div class="currency-sub" id="franceRate">+0 / sec</div></div>
+    <div class="currency"><span class="currency-icon">🌌</span><div><div class="currency-label">Reality Shards</div><div class="currency-value" id="shards">0</div></div><div class="currency-sub">Multiverse</div></div>
+  </section>
+  <div class="dimension-strip"><span class="dimension-dot"></span><span>Currently in</span><strong id="activeDimension">Original France</strong><span id="dimensionMood"></span></div>
+  <nav class="tabs" aria-label="Game tabs">
+    <button class="tab active" data-tab="main">🌍 Main</button><button class="tab" data-tab="shop">🛒 Shop</button><button class="tab" data-tab="nuke">☢️ Nuke</button><button class="tab" data-tab="prestige">✨ Prestige</button><button class="tab" data-tab="dimensions">🌀 Dimensions</button>
+  </nav>
+  <main>
+    <section class="view active" id="view-main">
+      <div class="grid-main">
+        <div class="card play-card">
+          <div class="eyebrow">Your current favorite button</div>
+          <div class="mascot" id="mascot">🪨</div>
+          <h2 id="heroTitle">Pebble Bomb</h2><p id="heroText">A small pebble. A surprisingly big career.</p>
+          <button class="primary" id="useBest">Use best bomb · +$1</button>
+          <div class="hint" style="margin-top:13px">Manual actions capped at <span id="manualLimit">10</span>/sec; in-game automation is exempt.</div>
+          <div class="hint" style="margin-top:8px">Or pick any bomb in the <button class="secondary" data-goto="shop" style="padding:4px 7px;font-size:10px">Shop</button></div>
+        </div>
+        <div class="card">
+          <div class="card-head"><div><div class="eyebrow">This dimension</div><h2>Run report</h2></div><span class="tag" id="runTag">FRESH START</span></div>
+          <div class="stats-stack">
+            <div class="stat-line"><span>Money earned this run</span><strong id="runMoney">$0</strong></div>
+            <div class="stat-line"><span>France Nuked this run</span><strong id="runFrance">0</strong></div>
+            <div class="stat-line"><span>Lifetime France Nuked</span><strong id="lifeFrance">0</strong></div>
+            <div class="stat-line"><span>Bombs owned</span><strong id="bombCount">1 / 8</strong></div>
+            <div class="stat-line"><span>Auto production</span><strong id="autoRate">0 / sec</strong></div>
+          </div>
+          <div style="margin-top:19px"><div style="display:flex;justify-content:space-between;font-size:11px"><span class="hint">Next bomb</span><span class="hint" id="nextBombLabel">Firecracker · $25</span></div><div class="progress-wrap"><div class="progress" id="bombProgress"></div></div></div>
+          <p class="hint" id="nextGoal">Earn cash, buy better bombs, and see what happens.</p>
+        </div>
+      </div>
+      <div class="card" style="margin-top:15px"><div class="card-head"><div><div class="eyebrow">Permanent record</div><h2>Lifetime stats</h2></div><span class="tag">ACROSS THE MULTIVERSE</span></div><div class="stats-stack lifetime-stats"><div class="stat-line"><span>Total bombs used</span><strong id="lifeClicks">0</strong></div><div class="stat-line"><span>Nukes launched</span><strong id="lifeNukes">0</strong></div><div class="stat-line"><span>Throttled clicks</span><strong id="suspiciousClicks">0</strong></div><div class="stat-line"><span>Prestiges</span><strong id="lifePrestiges">0</strong></div><div class="stat-line"><span>Dimensions unlocked</span><strong id="lifeDimensions">1 / 5</strong></div></div></div>
+    </section>
+    <section class="view" id="view-shop">
+      <div class="section-title"><div><h2>Shop & factory</h2><p>Invest your Money, improve production, and prepare for paid Nuke launches.</p></div></div>
+      <div class="card purchase-card"><div class="card-head"><div><div class="eyebrow">Bulk buying</div><h3>Purchase amount</h3></div><span class="hint">Buy Max spends only what you can afford.</span></div><div class="purchase-modes" id="purchaseModes"><button class="secondary purchase-mode active" data-amount="1">Buy 1</button><button class="secondary purchase-mode" data-amount="10">Buy 10</button><button class="secondary purchase-mode" data-amount="100">Buy 100</button><button class="secondary purchase-mode" data-amount="max">Buy Max</button></div></div>
+      <nav class="shop-categories" aria-label="Shop categories"><button class="shop-tab active" data-shop-category="bombs">💣 Bomb Shop</button><button class="shop-tab" data-shop-category="money">💵 Money Upgrades</button><button class="shop-tab" data-shop-category="nuke">☢️ Nuke Upgrades</button><button class="shop-tab" data-shop-category="automation">🏭 Automation</button></nav>
+      <div class="shop-panel active" id="shop-bombs"><div class="shop-grid" id="bombList"></div></div>
+      <div class="shop-panel" id="shop-money"><div class="section-title"><div><h3>Economy upgrades</h3><p>Every level increases the Money earned from all bombs.</p></div></div><div class="upgrade-grid" id="economyUpgrades"></div><div class="card" style="margin-top:15px"><div class="card-head"><div><div class="eyebrow">Classic local upgrades</div><h3>Dimension upgrades</h3></div></div><div class="upgrade-grid" id="legacyMoneyUpgrades"></div></div></div>
+      <div class="shop-panel" id="shop-nuke"><div class="section-title"><div><h3>Nuke payload & economy</h3><p>Upgrade France Nuked yield or spend Money to reduce paid launch costs.</p></div></div><div id="shopNukeUpgrades"></div></div>
+      <div class="shop-panel" id="shop-automation"><div class="section-title"><div><h3>Automatic production</h3><p>In-game automation is not limited by the manual click guard.</p></div><button class="secondary" id="autoBuyToggle">Auto-buy: LOCKED</button></div><div class="upgrade-grid" id="automationUpgrades"></div><div class="card" style="margin-top:15px"><div class="card-head"><div><div class="eyebrow">Classic local upgrades</div><h3>Dimension automation</h3></div></div><div class="upgrade-grid" id="legacyAutomationUpgrades"></div></div></div>
+    </section>
+    <section class="view" id="view-nuke"><div id="nukeContent"></div></section>
+    <section class="view" id="view-prestige">
+      <div class="prestige-banner"><div><h2>Reset this dimension. Upgrade your reality.</h2><p>Your other dimensions, achievements, lifetime stats, and permanent upgrades are safe.</p></div><div class="shard-preview" id="shardPreview">+0 🌌</div></div>
+      <div class="card" style="margin-bottom:15px"><div class="card-head"><div><div class="eyebrow">Manual prestige</div><h2>Reality reset</h2></div><span class="tag">CURRENT DIMENSION ONLY</span></div><p class="hint">Shards = floor(√(run France Nuked ÷ 1,000,000)). You need at least 1,000,000 France Nuked in this run to earn your first shard. Resetting wipes this dimension's Money, France Nuked, bombs, and local Money/Nuke upgrades. The Nuke lab unlock stays open.</p><button class="primary" id="prestigeBtn">Prestige for +0 Shards</button></div>
+      <div class="section-title"><div><h2>Permanent upgrade tree</h2><p>These upgrades stay with you after every reset.</p></div><span class="tag" id="shardBalance">0 SHARDS AVAILABLE</span></div>
+      <div class="upgrade-grid" id="prestigeUpgrades"></div>
+      <div id="achievementBox"></div>
+    </section>
+    <section class="view" id="view-dimensions">
+      <div class="section-title"><div><h2>The multiverse</h2><p>Only your active dimension produces. Everyone else is taking a well-earned nap.</p></div><span class="tag">5 DIMENSIONS PLANNED</span></div>
+      <div class="dim-grid" id="dimensionList"></div>
+    </section>
+  </main>
+  <div class="fineprint">A completely fictional clicker game. No actual countries, pastries, or physics were harmed.</div>
+</div>
+<div class="toast" id="toast" role="status"></div>
+<div class="modal-backdrop" id="modal"><div class="modal"><div class="eyebrow">Are you sure?</div><h2>Prestige this dimension?</h2><p id="modalText"></p><div class="modal-actions"><button class="secondary" id="cancelPrestige">Not yet</button><button class="primary" id="confirmPrestige">Reset & prestige</button></div></div></div>
+<script>
+(() => {
+  'use strict';
+  const SAVE_KEY = 'nukeFranceSimulator.save.v1';
+  const LANGUAGE_KEY = 'nukeFranceSimulator.language';
+  let language='en';
+  try {if(localStorage.getItem(LANGUAGE_KEY)==='microwave')language='microwave';}
+  catch(e){console.error('Could not load language preference:',e);}
+  const DIMENSIONS = [
+    {id:'original',name:'Original France',icon:'🥐',price:0,theme:'original',mood:'The baguettes are nervous.'},
+    {id:'alternate',name:'Alternate France',icon:'🪞',price:100,theme:'alternate',mood:'In this universe, the croissants are square.'},
+    {id:'dino',name:'Dino France',icon:'🦖',price:500,theme:'dino',mood:'The dinosaurs are mostly chill.'},
+    {id:'cyber',name:'Cyber France',icon:'🤖',price:2500,theme:'cyber',mood:'Loading baguette.exe...'},
+    {id:'cosmic',name:'Cosmic France',icon:'🌌',price:10000,theme:'cosmic',mood:'Space croissants taste like stardust.'}
+  ];
+  const NUKE_BALANCE = {
+    powerCost:50,powerCostScale:3,quantityCost:250,quantityCostScale:4,
+    speedCost:500,speedCostScale:3,launchCost:100000000,
+    autoNukeBaseRate:.1,autoNukeSpeedBonus:.25,
+    powerLevels:[1,2,10,100],powerScale:10,shardsPerMillion:1e6,maxBulkNukeLevels:1000
+  };
+  const CLICK_GUARD = {maxManualActionsPerSecond:10,windowMs:1000};
+  const BOMBS = [
+    {id:'pebble',name:'Pebble Bomb',icon:'💣',price:0,yield:1,desc:'A tiny pebble with enormous self-esteem.'},
+    {id:'firecracker',name:'Firecracker',icon:'🧨',price:25,yield:5,desc:'Small pop. Big main-character energy.'},
+    {id:'tnt',name:'TNT',icon:'🧱',price:150,yield:25,desc:'A classic. The box is doing most of the work.'},
+    {id:'dynamite',name:'Dynamite',icon:'🧯',price:750,yield:100,desc:'For when a firecracker just will not do.'},
+    {id:'moab',name:'MOAB',icon:'🎈',price:5000,yield:500,desc:'A very large cartoon balloon. Definitely.'},
+    {id:'atomic',name:'Atomic Bomb',icon:'☢️',price:50000,yield:5000,desc:'A glow-in-the-dark collectible.'},
+    {id:'hydrogen',name:'Hydrogen Bomb',icon:'🌟',price:500000,yield:50000,desc:'Now with 100% more dramatic lighting.'},
+    {id:'nuclear',name:'Nuclear Bomb',icon:'🚀',price:5000000,yield:0,desc:'Unlocks the completely fictional Nuke lab.'}
+  ];
+  const LOCAL_UPGRADES = [
+    {id:'gloves',name:'Sturdy Gloves',icon:'🧤',desc:'+25% Money from every bomb use.',price:100,mult:1.25,max:1},
+    {id:'supply',name:'Baguette Supply Chain',icon:'🥖',desc:'+50% Money from every bomb use.',price:1200,mult:1.5,max:1},
+    {id:'interns',name:'Very Helpful Interns',icon:'🧑‍💻',desc:'Generate money automatically using your best bomb.',price:1000,kind:'auto',max:1},
+    {id:'autobuyer',name:'Questionable Purchasing Bot',icon:'🛍️',desc:'Automatically buy the next bomb when affordable.',price:12000,kind:'autobuy',max:1}
+  ];
+  const SHOP_UPGRADES = [
+    {id:'betterMaterials',category:'money',name:'Better Materials',icon:'🧱',description:'+10% Money per bomb per level.',basePrice:100,growth:1.55,max:10,effect:'money',amount:.1,effectLabel:'+10% Money per bomb'},
+    {id:'efficientProduction',category:'money',name:'Efficient Production',icon:'⚙️',description:'+25% Money per bomb per level.',basePrice:500,growth:1.6,max:10,effect:'money',amount:.25,effectLabel:'+25% Money per bomb'},
+    {id:'advancedChemistry',category:'money',name:'Advanced Chemistry',icon:'🧪',description:'+50% Money per bomb per level.',basePrice:2000,growth:1.65,max:10,effect:'money',amount:.5,effectLabel:'+50% Money per bomb'},
+    {id:'industrialRevolution',category:'money',name:'Industrial Revolution',icon:'🏭',description:'+100% Money per bomb per level.',basePrice:10000,growth:1.7,max:10,effect:'money',amount:1,effectLabel:'+100% Money per bomb'},
+    {id:'corporateFunding',category:'money',name:'Corporate Funding',icon:'💼',description:'+200% Money per bomb per level.',basePrice:50000,growth:1.75,max:10,effect:'money',amount:2,effectLabel:'+200% Money per bomb'},
+    {id:'governmentContracts',category:'money',name:'Government Contracts',icon:'📑',description:'+500% Money per bomb per level.',basePrice:250000,growth:1.8,max:10,effect:'money',amount:5,effectLabel:'+500% Money per bomb'},
+    {id:'automaticBombLoader',category:'automation',name:'Automatic Bomb Loader',icon:'🤖',description:'Use your best owned bomb automatically once per second per level.',basePrice:5000,growth:1.8,max:10,effect:'bombLoader',amount:1,effectLabel:'+1 bomb/sec'},
+    {id:'fasterAssembly',category:'automation',name:'Faster Assembly',icon:'⏱️',description:'+25% automatic bomb production per level.',basePrice:10000,growth:1.8,max:10,effect:'automation',amount:.25,effectLabel:'+25% automatic production'},
+    {id:'industrialFactory',category:'automation',name:'Industrial Factory',icon:'🏗️',description:'+50% automatic bomb production per level.',basePrice:50000,growth:1.85,max:10,effect:'automation',amount:.5,effectLabel:'+50% automatic production'},
+    {id:'megaFactory',category:'automation',name:'Mega Factory',icon:'🏢',description:'+100% automatic bomb production per level.',basePrice:250000,growth:1.9,max:10,effect:'automation',amount:1,effectLabel:'+100% automatic production'},
+    {id:'automatedIndustry',category:'automation',name:'Automated Industry',icon:'🦾',description:'+200% automatic bomb production per level.',basePrice:1000000,growth:2,max:10,effect:'automation',amount:2,effectLabel:'+200% automatic production'},
+    {id:'autoNuke',category:'automation',name:'Auto Nuke',icon:'🚀',description:'Automatically launch paid Nukes. Each level adds 0.1 launches/sec.',basePrice:2000000000,growth:2,max:10,effect:'autoNuke',amount:NUKE_BALANCE.autoNukeBaseRate,effectLabel:'+0.1 paid launches/sec'},
+    {id:'cheapNuclearMaterials',category:'nuke',name:'Cheap Nuclear Materials',icon:'🧰',description:'Reduce Money cost per Nuke by 5% per level.',basePrice:25000000,growth:2,max:5,effect:'launchDiscount',amount:.05,effectLabel:'−5% launch cost'},
+    {id:'advancedFuel',category:'nuke',name:'Advanced Fuel',icon:'⛽',description:'Reduce Money cost per Nuke by 10% per level.',basePrice:100000000,growth:2,max:5,effect:'launchDiscount',amount:.1,effectLabel:'−10% launch cost'},
+    {id:'nuclearEfficiency',category:'nuke',name:'Nuclear Efficiency',icon:'♻️',description:'Reduce Money cost per Nuke by 20% per level.',basePrice:250000000,growth:2,max:5,effect:'launchDiscount',amount:.2,effectLabel:'−20% launch cost'},
+    {id:'bulkManufacturing',category:'nuke',name:'Bulk Manufacturing',icon:'📦',description:'Double Nukes in each manual or automatic batch per level.',basePrice:500000000,growth:2,max:5,effect:'bulk',amount:2,effectLabel:'×2 Nukes per batch'}
+  ];
+  const PERKS = [
+    {id:'economy1',category:'Economy',name:'Better Economics',icon:'📈',desc:'+25% Money in every dimension.',cost:1,max:10,effect:'+25% money per level'},
+    {id:'economy2',category:'Economy',name:'Rich Universe',icon:'💎',desc:'+50% Money in every dimension.',cost:3,max:10,effect:'+50% money per level'},
+    {id:'economy3',category:'Economy',name:'Starting Capital',icon:'🏦',desc:'Start each run with extra Money.',cost:2,max:10,effect:'Starts with $100 per level'},
+    {id:'bombs1',category:'Bombs',name:'Improved Bombs',icon:'💥',desc:'+25% bomb earnings in every dimension.',cost:2,max:10,effect:'+25% bomb income per level'},
+    {id:'bombs2',category:'Bombs',name:'Faster Production',icon:'⏱️',desc:'+20% automatic production.',cost:3,max:10,effect:'+20% automation per level'},
+    {id:'bombs3',category:'Bombs',name:'Cheap Materials',icon:'🧰',desc:'Bombs cost 10% less per level.',cost:3,max:5,effect:'−10% bomb prices per level'},
+    {id:'nukes1',category:'Nukes',name:'Nuke Engineering',icon:'🧪',desc:'+25% France Nuked earnings.',cost:3,max:10,effect:'+25% France Nuked per level'},
+    {id:'nukes2',category:'Nukes',name:'Multi-Nuke',icon:'☢️',desc:'+1 Nuke quantity per level.',cost:5,max:10,effect:'+1 quantity per level'},
+    {id:'nukes3',category:'Nukes',name:'Nuclear Efficiency',icon:'⚙️',desc:'Nuke upgrades cost 10% less per level.',cost:4,max:5,effect:'−10% Nuke upgrade prices per level'},
+    {id:'multi1',category:'Multiverse',name:'Dimensional Knowledge',icon:'🌀',desc:'Dimensions cost 10% fewer shards per level.',cost:5,max:5,effect:'−10% dimension price per level'},
+    {id:'multi2',category:'Multiverse',name:'Reality Power',icon:'✨',desc:'+10% to all production per level.',cost:5,max:10,effect:'+10% all production per level'},
+    {id:'multi3',category:'Multiverse',name:'Extra Reality',icon:'🌌',desc:'+10% prestige shard rewards per level.',cost:8,max:10,effect:'+10% prestige rewards per level'}
+  ];
+  const ACHIEVEMENTS = [
+    {id:'first-click',name:'Button Enjoyer',desc:'Use a bomb for the first time.',icon:'👆',test:s=>s.stats.clicks>=1},
+    {id:'first-upgrade',name:'Retail Therapy',desc:'Buy your first upgrade.',icon:'🛒',test:s=>Object.values(s.perks).some(Boolean)||Object.values(active().local).some(Boolean)},
+    {id:'nuke-unlocked',name:'A Big Red Button',desc:'Unlock the Nuke lab.',icon:'🚀',test:()=>active().nuke.unlocked},
+    {id:'million',name:'That Escalated Quickly',desc:'Earn 1M lifetime France Nuked.',icon:'📊',test:s=>s.stats.lifetimeFrance>=1e6},
+    {id:'prestige',name:'New Phone, Who Dis?',desc:'Prestige for the first time.',icon:'🔄',test:s=>s.stats.prestiges>=1},
+    {id:'all-dimensions',name:'Frequent Flyer',desc:'Unlock all five dimensions.',icon:'🌀',test:s=>DIMENSIONS.every(d=>s.unlocked.includes(d.id))},
+    {id:'big-number',name:'Number Go Brrr',desc:'Reach 1B lifetime France Nuked.',icon:'🤯',test:s=>s.stats.lifetimeFrance>=1e9},
+    {id:'clicker',name:'Professional Button Presser',desc:'Use 1,000 bombs.',icon:'🏆',test:s=>s.stats.clicks>=1000}
+  ];
+  function newDimension(id, starting=0) {
+    return {money:starting,runMoney:0,france:0,runFrance:0,bombs:['pebble'],local:{},shopLevels:{},autoBuy:false,autoNukeProgress:0,nuke:{unlocked:false,everUnlocked:false,level:0,quantity:1,speed:0},updatedAt:Date.now()};
+  }
+  function freshState(){const dims={};DIMENSIONS.forEach(d=>dims[d.id]=newDimension(d.id));return {version:1,shards:0,active:'original',unlocked:['original'],dimensions:dims,perks:{},achievements:[],stats:{lifetimeFrance:0,lifetimeMoney:0,clicks:0,nukeLaunches:0,suspiciousClicks:0,prestiges:0,startedAt:Date.now()},lastSeen:Date.now()};}
+  function validState(s){
+    if(!s||typeof s!=='object'||!s.dimensions||!Array.isArray(s.unlocked)||!s.stats) return false;
+    for(const d of DIMENSIONS){if(!s.dimensions[d.id]||!Array.isArray(s.dimensions[d.id].bombs)||!s.dimensions[d.id].nuke)return false;}
+    return true;
+  }
+  let state=freshState(),loadError=false;
+  try {const raw=localStorage.getItem(SAVE_KEY);if(raw){const parsed=JSON.parse(raw);if(validState(parsed)){state=parsed;}else loadError=true;}}
+  catch(e){loadError=true;console.error('Could not load saved game:',e);}
+  state.stats=Object.assign(freshState().stats,state.stats||{});
+  state.perks=state.perks||{};state.achievements=state.achievements||[];
+  DIMENSIONS.forEach(d=>{
+    const saved=state.dimensions[d.id]||{};
+    state.dimensions[d.id]=Object.assign(newDimension(d.id),saved);
+    state.dimensions[d.id].nuke=Object.assign({unlocked:false,everUnlocked:false,level:0,quantity:1,speed:0},saved.nuke||{});
+    state.dimensions[d.id].nuke.everUnlocked=!!(state.dimensions[d.id].nuke.everUnlocked||state.dimensions[d.id].nuke.unlocked);
+    state.dimensions[d.id].nuke.unlocked=state.dimensions[d.id].nuke.everUnlocked;
+    state.dimensions[d.id].local=state.dimensions[d.id].local||{};
+    state.dimensions[d.id].shopLevels=state.dimensions[d.id].shopLevels||{};
+    state.dimensions[d.id].autoNukeProgress=Number(state.dimensions[d.id].autoNukeProgress)||0;
+  });
+  if(!state.dimensions[state.active]||!state.unlocked.includes(state.active))state.active='original';
+  const current=active();
+  const away=Math.max(0,Math.min(8*60*60,(Date.now()-(Number(state.lastSeen)||Date.now()))/1000));
+  let toastTimer, lastTick=Date.now(), saveTimer=0, soundOn=false,purchaseMode=1,manualClickTimes=[],lastClickWarning=0;
+  if(away>5){const offline=simulateElapsed(current,away);current.updatedAt=Date.now();window.addEventListener('load',()=>toast(`Offline: +${fmt(offline.money)} Money, −${fmt(offline.moneySpent)} Nuke costs, +${fmt(offline.france)} France Nuked.`));}
+  function active(){return state.dimensions[state.active];}
+  function perkLevel(id){return Number(state.perks[id]||0);}
+  function perkFactor(id,step){return 1+perkLevel(id)*step;}
+  function bombDef(id){return BOMBS.find(b=>b.id===id);}
+  function shopLevel(d,id){return Math.max(0,Number(d.shopLevels[id])||0);}
+  function priceMultiplier(){return DIMENSIONS.some(def=>state.dimensions[def.id].nuke.everUnlocked||state.dimensions[def.id].nuke.unlocked)?2:1.5;}
+  function moneyMultiplier(d=active()){
+    let m=perkFactor('economy1',.25)*perkFactor('economy2',.5)*perkFactor('bombs1',.25)*perkFactor('multi2',.1)*localMoneyMultiplier(d);
+    for(const u of SHOP_UPGRADES)if(u.effect==='money')m*=1+u.amount*shopLevel(d,u.id);
+    return m;
+  }
+  function localMoneyMultiplier(d){let m=1;if(d.local.gloves)m*=1.25;if(d.local.supply)m*=1.5;return m;}
+  function automationMultiplier(d){
+    let m=perkFactor('bombs2',.2);
+    for(const u of SHOP_UPGRADES)if(u.effect==='automation')m*=1+u.amount*shopLevel(d,u.id);
+    return m;
+  }
+  function nukeMultiplier(){return perkFactor('nukes1',.25)*perkFactor('multi2',.1);}
+  function bombIncome(b){return b.yield*moneyMultiplier();}
+  function nukePower(d){
+    return nukePowerAt(d.nuke.level);
+  }
+  function nukePayload(d){return d.nuke.unlocked?Math.max(1,Math.floor(nukePower(d)*nukeMultiplier())):0;}
+  function launchDiscount(d){
+    let discount=1;
+    for(const u of SHOP_UPGRADES)if(u.effect==='launchDiscount')discount*=Math.pow(1-u.amount,shopLevel(d,u.id));
+    return discount;
+  }
+  function nukeLaunchCost(d){return Math.max(1,Math.ceil(NUKE_BALANCE.launchCost*launchDiscount(d))*priceMultiplier());}
+  function bulkLaunches(d){return Math.pow(2,Math.min(5,shopLevel(d,'bulkManufacturing')));}
+  function nukeAutoRate(d){return d.nuke.unlocked?shopLevel(d,'autoNuke')*NUKE_BALANCE.autoNukeBaseRate*(1+d.nuke.speed*NUKE_BALANCE.autoNukeSpeedBonus):0;}
+  function ratesFor(d){
+    const best=Math.max(...d.bombs.map(id=>bombDef(id).yield),1);
+    const legacyAuto=d.local.interns?Math.max(1,best/10):0;
+    const loadedAuto=best*shopLevel(d,'automaticBombLoader');
+    const auto=(legacyAuto+loadedAuto)*moneyMultiplier(d)*automationMultiplier(d);
+    const autoLaunches=nukeAutoRate(d),batch=d.nuke.quantity*bulkLaunches(d);
+    return {money:auto,france:nukePayload(d)*batch*autoLaunches,autoLaunches,perClick:nukePayload(d)};
+  }
+  function advanceDimension(d,seconds){
+    const rates=ratesFor(d),moneyEarned=rates.money*seconds;
+    d.money+=moneyEarned;d.runMoney+=moneyEarned;state.stats.lifetimeMoney+=moneyEarned;
+    let moneySpent=0,franceEarned=0;
+    if(rates.autoLaunches>0){
+      d.autoNukeProgress+=rates.autoLaunches*seconds;
+      const due=Math.floor(d.autoNukeProgress);
+      if(due>0){
+        const costPerGroup=nukeLaunchCost(d)*d.nuke.quantity*bulkLaunches(d);
+        const affordable=costPerGroup>0?Math.floor(d.money/costPerGroup):0;
+        const groups=Math.min(due,affordable);
+        if(groups>0){
+          const result=launchNukes(d,groups);
+          if(result){moneySpent=result.moneySpent;franceEarned=result.france;}
+        }
+        d.autoNukeProgress-=due;
+      }
+    }else d.autoNukeProgress=0;
+    return {money:moneyEarned,moneySpent,france:franceEarned};
+  }
+  function simulateElapsed(d,seconds){
+    let remaining=seconds,money=0,moneySpent=0,france=0;
+    while(remaining>0){
+      const step=Math.min(1,remaining),result=advanceDimension(d,step);
+      money+=result.money;moneySpent+=result.moneySpent;france+=result.france;remaining-=step;
+    }
+    return {money,moneySpent,france};
+  }
+  function allowManualClick(){
+    const now=performance.now();
+    manualClickTimes=manualClickTimes.filter(time=>time>now-CLICK_GUARD.windowMs);
+    if(manualClickTimes.length>=CLICK_GUARD.maxManualActionsPerSecond){
+      state.stats.suspiciousClicks++;
+      if(now-lastClickWarning>2000){lastClickWarning=now;toast(`Manual click limit reached (${CLICK_GUARD.maxManualActionsPerSecond}/sec). In-game automation is unaffected.`);}
+      updateHUD();
+      return false;
+    }
+    manualClickTimes.push(now);return true;
+  }
+  function fmt(n){
+    if(!Number.isFinite(n))return '∞';
+    const sign=n<0?'-':'';n=Math.abs(n);
+    if(n<1000)return sign+(Number.isInteger(n)?Math.floor(n).toLocaleString('en-US'):n.toFixed(1));
+    if(n>=1e15)return sign+n.toExponential(2);
+    const units=[['T',1e12],['B',1e9],['M',1e6],['K',1e3]];
+    for(const [u,v] of units)if(n>=v){const x=n/v,decimals=x>=1000?0:x>=10?1:2;let value=x.toFixed(decimals);if(decimals)value=value.replace(/\.?0+$/,'');return sign+value+u;}
+    return sign+n.toExponential(2);
+  }
+  function moneyFmt(n){return '$'+fmt(n);}
+  function dimDef(id){return DIMENSIONS.find(d=>d.id===id);}
+  function toast(msg){const el=document.getElementById('toast');el.textContent=msg;el.classList.add('show');clearTimeout(toastTimer);toastTimer=setTimeout(()=>el.classList.remove('show'),2600);}
+  const languageTextNodes=new WeakMap(),languageAttributes=new WeakMap();
+  function translateText(text){return language==='microwave'?text.replace(/[A-Za-zÀ-ÖØ-öø-ÿ]/g,'M'):text;}
+  function applyLanguage(){
+    document.documentElement.lang='en';
+    document.title=translateText('Nuke France Simulator');
+    const walker=document.createTreeWalker(document.body,NodeFilter.SHOW_TEXT);
+    let node;
+    while((node=walker.nextNode())){
+      let entry=languageTextNodes.get(node);
+      if(!entry||node.nodeValue!==entry.rendered)entry={source:node.nodeValue,rendered:node.nodeValue};
+      const rendered=translateText(entry.source);
+      if(node.nodeValue!==rendered)node.nodeValue=rendered;
+      entry.rendered=rendered;languageTextNodes.set(node,entry);
+    }
+    document.body.querySelectorAll('[aria-label],[title],[placeholder]').forEach(element=>{
+      let entries=languageAttributes.get(element);
+      if(!entries){entries={};languageAttributes.set(element,entries);}
+      ['aria-label','title','placeholder'].forEach(name=>{
+        if(!element.hasAttribute(name))return;
+        const value=element.getAttribute(name),entry=entries[name];
+        if(!entry||value!==entry.rendered)entries[name]={source:value,rendered:value};
+        const rendered=translateText(entries[name].source);
+        if(value!==rendered)element.setAttribute(name,rendered);
+        entries[name].rendered=rendered;
+      });
+    });
+  }
+  function floatText(text,x,y,color){const el=document.createElement('span');el.className='floating';el.textContent=text;el.style.left=x+'px';el.style.top=y+'px';if(color)el.style.color=color;document.body.appendChild(el);setTimeout(()=>el.remove(),900);}
+  function save(){
+    state.lastSeen=Date.now();active().updatedAt=Date.now();
+    try{localStorage.setItem(SAVE_KEY,JSON.stringify(state));document.getElementById('saveStatus').textContent='● Saved';return true;}
+    catch(e){document.getElementById('saveStatus').textContent='! Save error';console.error('Could not save game:',e);toast('Save failed. Check browser storage settings.');return false;}
+  }
+  function ownedBombs(){return active().bombs;}
+  function bombCost(b,d=active()){return Math.ceil(b.price*Math.max(.5,1-perkLevel('bombs3')*.1))*priceMultiplier();}
+  function localUpgradePrice(upgrade,d=active()){return upgrade.price*priceMultiplier();}
+  function buyBomb(id){
+    const d=active(),b=bombDef(id);if(!b||d.bombs.includes(id))return;
+    const cost=bombCost(b);if(d.money<cost)return;
+    d.money-=cost;d.bombs.push(id);if(id==='nuclear'){d.nuke.unlocked=true;d.nuke.everUnlocked=true;toast('Nuke lab unlocked! Each launch costs Money.');}else toast(`${b.name} acquired!`);
+    render();save();
+  }
+  function useBomb(id,el){
+    const d=active(),b=bombDef(id);if(!b||!d.bombs.includes(id))return;
+    if(id==='nuclear'){toast('Your Nuke is ready in the Nuke tab!');return;}
+    if(!allowManualClick())return;
+    const earn=Math.max(1,Math.floor(bombIncome(b)));d.money+=earn;d.runMoney+=earn;state.stats.lifetimeMoney+=earn;state.stats.clicks++;
+    const rect=(el||document.getElementById('useBest')).getBoundingClientRect();floatText('+$'+fmt(earn),rect.left+rect.width/2,rect.top+rect.height/2);
+    const mascot=document.getElementById('mascot');mascot.classList.remove('bump');void mascot.offsetWidth;mascot.classList.add('bump');
+    if(soundOn)beep();checkAchievements();render();save();
+  }
+  function useNuke(){
+    const d=active();if(!d.nuke.unlocked||!allowManualClick())return;
+    const launches=d.nuke.quantity*bulkLaunches(d),cost=nukeLaunchCost(d)*launches;
+    if(d.money<cost){toast(`Not enough Money. This batch costs ${moneyFmt(cost)}.`);return;}
+    const result=launchNukes(d,1);if(!result)return;
+    const btn=document.getElementById('launchNuke'),r=btn.getBoundingClientRect();floatText('+'+fmt(result.france)+' 🇫🇷',r.left+r.width/2,r.top+10,'#ffb0ca');
+    checkAchievements();render();save();
+  }
+  function buyLocal(id){
+    const d=active(),u=LOCAL_UPGRADES.find(x=>x.id===id);if(!u||d.local[id])return;
+    const cost=localUpgradePrice(u,d);if(d.money<cost)return;d.money-=cost;d.local[id]=1;toast(`${u.name} unlocked.`);render();save();
+  }
+  function shopUpgradePrice(upgrade,level,d=active()){return Math.ceil(upgrade.basePrice*Math.pow(upgrade.growth,level))*priceMultiplier();}
+  function shopPurchaseDetails(upgrade,d=active(),mode=purchaseMode){
+    const level=shopLevel(d,upgrade.id),remaining=upgrade.max-level;
+    if(remaining<=0)return {count:0,cost:0,requiredCost:0,nextCost:0,level,maxed:true};
+    const nextCost=shopUpgradePrice(upgrade,level,d);
+    const target=Math.min(remaining,mode==='max'?remaining:Number(mode)||1);
+    let requiredCost=0;
+    for(let i=0;i<target;i++)requiredCost+=shopUpgradePrice(upgrade,level+i,d);
+    if(mode!=='max'&&d.money<requiredCost)return {count:0,cost:requiredCost,requiredCost,nextCost,level,maxed:false};
+    let count=0,cost=0;
+    for(let i=0;i<target;i++){
+      const next=shopUpgradePrice(upgrade,level+i,d);
+      if(cost+next>d.money)break;
+      cost+=next;count++;
+    }
+    return {count,cost,requiredCost,nextCost,level,maxed:false};
+  }
+  function buyShopUpgrade(id){
+    const d=active(),upgrade=SHOP_UPGRADES.find(u=>u.id===id);if(!upgrade)return;
+    const details=shopPurchaseDetails(upgrade,d);if(!details.count)return;
+    d.money-=details.cost;d.shopLevels[id]=shopLevel(d,id)+details.count;
+    toast(`${upgrade.name} upgraded to level ${d.shopLevels[id]}.`);render();save();
+  }
+  function nukeUpgradeLevel(kind,d){
+    if(kind==='power')return d.nuke.level;
+    if(kind==='quantity')return d.nuke.quantity-1;
+    if(kind==='speed')return d.nuke.speed;
+    return 0;
+  }
+  function nukeUpgradePrice(kind,level,d=active()){
+    const efficiency=Math.max(.5,1-perkLevel('nukes3')*.1);
+    const multiplier=priceMultiplier();
+    if(kind==='power')return Math.ceil(NUKE_BALANCE.powerCost*Math.pow(NUKE_BALANCE.powerCostScale,level)*efficiency)*multiplier;
+    if(kind==='quantity')return Math.ceil(NUKE_BALANCE.quantityCost*Math.pow(NUKE_BALANCE.quantityCostScale,level)*efficiency)*multiplier;
+    return Math.ceil(NUKE_BALANCE.speedCost*Math.pow(NUKE_BALANCE.speedCostScale,level)*efficiency)*multiplier;
+  }
+  function nukePurchaseDetails(kind,d=active(),mode=purchaseMode){
+    const level=nukeUpgradeLevel(kind,d),target=mode==='max'?NUKE_BALANCE.maxBulkNukeLevels:Math.max(1,Number(mode)||1);
+    const nextCost=nukeUpgradePrice(kind,level,d);
+    if(!d.nuke.unlocked)return {count:0,cost:nextCost,nextCost,level};
+    let requiredCost=0,count=0,cost=0;
+    if(mode!=='max'){
+      for(let i=0;i<target;i++)requiredCost+=nukeUpgradePrice(kind,level+i,d);
+      if(d.france<requiredCost)return {count:0,cost:requiredCost,nextCost,level};
+    }
+    const maxCount=target;
+    for(let i=0;i<maxCount;i++){
+      const next=nukeUpgradePrice(kind,level+i,d);
+      if(cost+next>d.france)break;
+      cost+=next;count++;
+    }
+    return {count,cost:mode==='max'?cost:requiredCost,nextCost,level};
+  }
+  function buyNuke(kind){
+    const d=active(),n=d.nuke;if(!n.unlocked)return;
+    const details=nukePurchaseDetails(kind,d);if(!details.count)return;
+    d.france-=details.cost;
+    if(kind==='power')n.level+=details.count;
+    if(kind==='quantity')n.quantity+=details.count;
+    if(kind==='speed')n.speed+=details.count;
+    toast(`${kind==='power'?'Nuke Power':kind==='quantity'?'Nuke Quantity':'Nuke Speed'} upgraded to level ${nukeUpgradeLevel(kind,d)}.`);render();save();
+  }
+  function launchNukes(d,groups=1){
+    if(!d.nuke.unlocked||!Number.isFinite(groups)||groups<1)return null;
+    const launched=d.nuke.quantity*bulkLaunches(d)*groups,cost=nukeLaunchCost(d)*launched;
+    if(!Number.isFinite(cost)||d.money<cost)return null;
+    const france=nukePayload(d)*launched;
+    d.money=Math.max(0,d.money-cost);d.france+=france;d.runFrance+=france;
+    state.stats.lifetimeFrance+=france;state.stats.nukeLaunches+=launched;
+    return {moneySpent:cost,france,launches:launched};
+  }
+  function shardsEarned(){
+    const raw=Math.floor(Math.sqrt(Math.max(0,active().runFrance)/NUKE_BALANCE.shardsPerMillion));
+    return Math.floor(raw*perkFactor('multi3',.1));
+  }
+  function doPrestige(){
+    const gain=shardsEarned();if(gain<1)return;
+    state.shards+=gain;state.stats.prestiges++;
+    const starting=perkLevel('economy3')*100;
+    const nukeUnlocked=active().nuke.everUnlocked||active().nuke.unlocked;
+    state.dimensions[state.active]=newDimension(state.active,starting);
+    state.dimensions[state.active].nuke.unlocked=nukeUnlocked;
+    state.dimensions[state.active].nuke.everUnlocked=nukeUnlocked;
+    state.dimensions[state.active].updatedAt=Date.now();
+    document.getElementById('modal').classList.remove('show');
+    checkAchievements();toast(`Reality reset! +${fmt(gain)} Reality Shards.`);render();save();
+  }
+  function perkPrice(p,level=perkLevel(p.id)){return Math.ceil(p.cost*(level+1))*priceMultiplier();}
+  function buyPerk(id){
+    const p=PERKS.find(x=>x.id===id);if(!p)return;const level=perkLevel(id),cost=perkPrice(p,level);if(level>=p.max||state.shards<cost)return;
+    state.shards-=cost;state.perks[id]=level+1;toast(`${p.name} upgraded to level ${level+1}.`);render();save();
+  }
+  function dimensionPrice(def){return Math.ceil(def.price*Math.max(.5,1-perkLevel('multi1')*.1))*priceMultiplier();}
+  function unlockDimension(id){
+    const def=dimDef(id);if(!def||state.unlocked.includes(id))return;
+    const cost=dimensionPrice(def);if(state.shards<cost)return;
+    state.shards-=cost;state.unlocked.push(id);state.dimensions[id]=newDimension(id);toast(`${def.name} unlocked!`);render();save();
+  }
+  function switchDimension(id){
+    if(!state.unlocked.includes(id)||id===state.active)return;
+    state.active=id;state.lastSeen=Date.now();lastTick=Date.now();
+    document.body.dataset.theme=dimDef(id).theme;toast(`Now visiting ${dimDef(id).name}.`);render();save();
+  }
+  function checkAchievements(){
+    let changed=false;
+    for(const a of ACHIEVEMENTS)if(!state.achievements.includes(a.id)&&a.test(state)){state.achievements.push(a.id);toast(`Achievement unlocked: ${a.name}`);changed=true;}
+    if(changed&&document.getElementById('achievementBox'))renderAchievementList();
+  }
+  function beep(){try{const c=new(window.AudioContext||window.webkitAudioContext)(),o=c.createOscillator(),g=c.createGain();o.connect(g);g.connect(c.destination);o.frequency.value=460;g.gain.value=.025;o.start();o.stop(c.currentTime+.06);o.onended=()=>c.close();}catch(e){console.warn('Audio unavailable:',e);}}
+  function updateHUD(){
+    const d=active(),def=dimDef(state.active),rates=ratesFor(d);
+    document.body.dataset.theme=def.theme;
+    document.getElementById('money').textContent=fmt(d.money);
+    document.getElementById('france').textContent=fmt(d.france);
+    document.getElementById('shards').textContent=fmt(state.shards);
+    document.getElementById('moneyRate').textContent='+'+fmt(rates.money)+' income / sec';
+    document.getElementById('franceRate').textContent=rates.autoLaunches>0?'up to +'+fmt(rates.france)+' / sec':'+'+fmt(rates.france)+' / sec';
+    document.getElementById('activeDimension').textContent=def.name;
+    document.getElementById('dimensionMood').textContent=def.mood;
+    document.getElementById('runMoney').textContent=moneyFmt(d.runMoney);
+    document.getElementById('runFrance').textContent=fmt(d.runFrance);
+    document.getElementById('lifeFrance').textContent=fmt(state.stats.lifetimeFrance);
+    document.getElementById('lifeClicks').textContent=fmt(state.stats.clicks);
+    document.getElementById('lifeNukes').textContent=fmt(state.stats.nukeLaunches);
+    document.getElementById('suspiciousClicks').textContent=fmt(state.stats.suspiciousClicks);
+    document.getElementById('manualLimit').textContent=CLICK_GUARD.maxManualActionsPerSecond;
+    document.getElementById('lifePrestiges').textContent=fmt(state.stats.prestiges);
+    document.getElementById('lifeDimensions').textContent=state.unlocked.length+' / 5';
+    document.getElementById('bombCount').textContent=d.bombs.length+' / 8';
+    document.getElementById('autoRate').textContent=fmt(rates.money)+' Money income/sec · up to '+fmt(rates.france)+' paid France/sec';
+    const best=[...d.bombs].filter(id=>id!=='nuclear').map(bombDef).sort((a,b)=>b.yield-a.yield)[0]||BOMBS[0];
+    document.getElementById('mascot').textContent=best.icon;
+    document.getElementById('heroTitle').textContent=best.name;
+    document.getElementById('heroText').textContent=best.desc;
+    document.getElementById('useBest').textContent='Use '+best.name+' · +$'+fmt(bombIncome(best));
+    document.getElementById('useBest').onclick=()=>useBomb(best.id,document.getElementById('useBest'));
+    const next=BOMBS.find(b=>!d.bombs.includes(b.id));
+    document.getElementById('nextBombLabel').textContent=next?`${next.name} · ${moneyFmt(bombCost(next))}`:'All bombs acquired!';
+    document.getElementById('bombProgress').style.width=next?Math.min(100,d.money/bombCost(next)*100)+'%':'100%';
+    document.getElementById('nextGoal').textContent=next?`${fmt(Math.max(0,bombCost(next)-d.money))} more Money until your next bomb.`:'Visit the Nuke tab and grow France Nuked.';
+    document.getElementById('runTag').textContent=d.runFrance>=1e6?'PRESTIGE READY?':d.nuke.unlocked?'NUKE ERA':'BUILDING';
+    document.getElementById('shardPreview').textContent='+'+fmt(shardsEarned())+' 🌌';
+    document.getElementById('prestigeBtn').textContent='Prestige for +'+fmt(shardsEarned())+' Shards';
+    document.getElementById('prestigeBtn').disabled=shardsEarned()<1;
+    document.getElementById('shardBalance').textContent=fmt(state.shards)+' SHARDS AVAILABLE';
+    document.getElementById('soundBtn').textContent=soundOn?'🔊 Sound on':'🔇 Sound off';
+    const launchButton=document.getElementById('launchNuke');
+    if(launchButton){
+      const count=d.nuke.quantity*bulkLaunches(d),cost=nukeLaunchCost(d)*count;
+      launchButton.disabled=!d.nuke.unlocked||d.money<cost;
+      launchButton.textContent=`Launch ${fmt(count)} Nuke${count===1?'':'s'} · ${moneyFmt(cost)} · +${fmt(nukePayload(d)*count)} 🇫🇷`;
+    }
+    document.querySelectorAll('[data-buy]').forEach(button=>{const b=bombDef(button.dataset.buy);button.disabled=d.money<bombCost(b);});
+    document.querySelectorAll('[data-local]').forEach(button=>{const u=LOCAL_UPGRADES.find(x=>x.id===button.dataset.local);button.disabled=!!d.local[button.dataset.local]||d.money<localUpgradePrice(u,d);});
+    document.querySelectorAll('[data-shop-upgrade]').forEach(button=>{const u=SHOP_UPGRADES.find(x=>x.id===button.dataset.shopUpgrade);button.disabled=!u||shopPurchaseDetails(u,d).count===0;});
+    document.querySelectorAll('[data-nuke]').forEach(button=>button.disabled=nukePurchaseDetails(button.dataset.nuke,d).count===0);
+  }
+  function shopEffectText(upgrade,d){
+    const level=shopLevel(d,upgrade.id),next=upgrade.effectLabel;
+    if(upgrade.effect==='money')return `Current: +${fmt(upgrade.amount*level*100)}% Money per bomb. Next: ${next}.`;
+    if(upgrade.effect==='bombLoader')return `Current: ${fmt(level)} best-bomb uses/sec. Next: ${next}.`;
+    if(upgrade.effect==='automation')return `Current: ×${fmt(1+upgrade.amount*level)} automatic production. Next: ${next}.`;
+    if(upgrade.effect==='autoNuke')return `Current: ${fmt(level*upgrade.amount)} base launches/sec. Next: ${next}; requires unlocked Nuke and launch Money.`;
+    if(upgrade.effect==='launchDiscount')return `Current reduction: ${fmt((1-Math.pow(1-upgrade.amount,level))*100)}%. Next: ${next}.`;
+    if(upgrade.effect==='bulk')return `Current batch: ×${fmt(bulkLaunches(d))} Nukes. Next: ${next}.`;
+    return next;
+  }
+  function shopUpgradeCard(upgrade,d){
+    const details=shopPurchaseDetails(upgrade,d),needed=purchaseMode==='max'?details.nextCost:details.requiredCost;
+    const price=details.count?moneyFmt(details.cost):details.maxed?'MAX LEVEL':moneyFmt(needed)+(purchaseMode==='max'?' next level':' required');
+    const buyText=details.count?`Buy ${fmt(details.count)} · ${moneyFmt(details.cost)}`:details.maxed?'MAX LEVEL':`Need ${moneyFmt(needed)}`;
+    return `<article class="item"><div class="item-top"><span class="item-icon">${upgrade.icon}</span><div><div class="eyebrow">${upgrade.category==='money'?'Economy':upgrade.category==='nuke'?'Nuke economy':'Automation'}</div><div class="item-title">${upgrade.name}</div></div></div><div class="item-desc">${upgrade.description}</div><div class="item-meta"><span>Level</span><strong>${shopLevel(d,upgrade.id)} / ${upgrade.max}</strong></div><div class="upgrade-effect">${shopEffectText(upgrade,d)}</div><div class="item-meta"><span>${details.count?'Purchase total':'Next price'}</span><strong class="cost">${price}</strong></div><button class="secondary full" data-shop-upgrade="${upgrade.id}" ${details.count?'':'disabled'}>${buyText}</button></article>`;
+  }
+  function legacyUpgradeCard(upgrade,d){
+    const owned=!!d.local[upgrade.id];
+    const price=localUpgradePrice(upgrade,d);
+    return `<article class="item"><div class="item-top"><span class="item-icon">${upgrade.icon}</span><div class="item-title">${upgrade.name}</div></div><div class="item-desc">${upgrade.desc}</div><div class="item-meta"><span>Level</span><strong>${owned?'1 / 1':'0 / 1'}</strong></div><div class="upgrade-effect">${owned?'Already active in this dimension.':'Next: '+upgrade.desc}</div><div class="item-meta"><span>${owned?'Status':'Price'}</span><strong class="${owned?'owned':'cost'}">${owned?'UNLOCKED':moneyFmt(price)}</strong></div><button class="secondary full" data-local="${upgrade.id}" ${owned||d.money<price?'disabled':''}>${owned?'Purchased':'Buy · '+moneyFmt(price)}</button></article>`;
+  }
+  function nukeUpgradeCard(kind,d){
+    const n=d.nuke,details=nukePurchaseDetails(kind,d),names={power:'Nuke Power',quantity:'Nuke Quantity',speed:'Nuke Speed'},icons={power:'⚡',quantity:'☢️',speed:'⏱️'};
+    let current,next;
+    if(kind==='power'){current=`${fmt(nukePayload(d))} France Nuked/Nuke`;next=`${fmt(Math.max(1,Math.floor(nukePowerAt(n.level+1)*nukeMultiplier())))} France Nuked/Nuke`;}
+    else if(kind==='quantity'){current=`${fmt(n.quantity*bulkLaunches(d))} Nukes per batch`;next=`${fmt((n.quantity+1)*bulkLaunches(d))} Nukes per batch`;}
+    else {current=`${fmt(nukeAutoRate(d))} launches/sec`;next=`+${fmt(NUKE_BALANCE.autoNukeSpeedBonus*100)}% Auto Nuke cadence (requires Auto Nuke)`;}
+    const needed=purchaseMode==='max'?details.nextCost:details.cost;
+    const buyText=details.count?`Buy ${fmt(details.count)} · ${fmt(details.cost)} 🇫🇷`:`Need ${fmt(needed)} 🇫🇷`;
+    const price=details.count?fmt(details.cost):fmt(needed);
+    return `<article class="item"><div class="item-top"><span class="item-icon">${icons[kind]}</span><div><div class="eyebrow">Paid in France Nuked</div><div class="item-title">${names[kind]}</div></div></div><div class="item-desc">Level ${nukeUpgradeLevel(kind,d)} · Current: ${current}. Next: ${next}.</div><div class="item-meta"><span>${details.count?'Purchase total':'Next price'}</span><strong class="cost">${price} 🇫🇷</strong></div><button class="primary full" data-nuke="${kind}" ${details.count?'':'disabled'}>${buyText}</button></article>`;
+  }
+  function nukePowerAt(level){const levels=NUKE_BALANCE.powerLevels;return level<levels.length?levels[level]:levels[levels.length-1]*Math.pow(NUKE_BALANCE.powerScale,level-levels.length+1);}
+  function nukeUpgradeCards(d){
+    const nukeCards=['power','quantity','speed'].map(kind=>nukeUpgradeCard(kind,d)).join('');
+    const economyCards=SHOP_UPGRADES.filter(u=>u.category==='nuke').map(u=>shopUpgradeCard(u,d)).join('');
+    return `<div class="upgrade-grid">${nukeCards}</div><div class="section-title" style="margin-top:18px"><div><h3>Launch economy</h3><p>These upgrades cost Money and independently reduce per-Nuke launch costs or increase batch size.</p></div></div><div class="upgrade-grid">${economyCards}</div>`;
+  }
+  function render(){
+    const d=active(),rates=ratesFor(d);
+    updateHUD();
+    document.getElementById('bombList').innerHTML=BOMBS.map(b=>{
+      const owned=d.bombs.includes(b.id),cost=bombCost(b),earn=b.yield?fmt(b.yield*moneyMultiplier(d)):'Nuke lab';
+      return `<article class="item"><div class="item-top"><span class="item-icon">${b.icon}</span><div><div class="item-title">${b.name}</div><div class="hint">${owned?'<span class="owned">OWNED · use as often as you like</span>':`Earns $${earn} per use`}</div></div></div><div class="item-desc">${b.desc}</div><div class="item-meta"><span>${owned?'Yield':'Price'}</span><strong class="${owned?'owned':'cost'}">${owned?(b.yield?'$'+earn+' / use':'Nuke unlocked'):moneyFmt(cost)}</strong></div>${owned?`<button class="secondary full" data-use="${b.id}" ${b.id==='nuclear'?'title="Open the Nuke tab to use"':''}>${b.id==='nuclear'?'☢️ Open Nuke lab':'Use '+b.name}</button>`:`<button class="primary full" data-buy="${b.id}" ${d.money<cost?'disabled':''}>Buy ${b.name} · ${moneyFmt(cost)}</button>`}</article>`;
+    }).join('');
+    document.getElementById('economyUpgrades').innerHTML=SHOP_UPGRADES.filter(u=>u.category==='money').map(u=>shopUpgradeCard(u,d)).join('');
+    document.getElementById('legacyMoneyUpgrades').innerHTML=LOCAL_UPGRADES.filter(u=>!u.kind).map(u=>legacyUpgradeCard(u,d)).join('');
+    document.getElementById('automationUpgrades').innerHTML=SHOP_UPGRADES.filter(u=>u.category==='automation').map(u=>shopUpgradeCard(u,d)).join('');
+    document.getElementById('legacyAutomationUpgrades').innerHTML=LOCAL_UPGRADES.filter(u=>u.kind).map(u=>legacyUpgradeCard(u,d)).join('');
+    document.getElementById('shopNukeUpgrades').innerHTML=nukeUpgradeCards(d);
+    document.getElementById('autoBuyToggle').textContent=d.local.autobuyer?'Auto-buy: '+(d.autoBuy?'ON':'OFF'):'Auto-buy: LOCKED';
+    document.getElementById('autoBuyToggle').disabled=!d.local.autobuyer;
+    renderNuke(d,rates);renderPrestige();renderDimensions();
+    checkAchievements();
+    applyLanguage();
+  }
+  function renderNuke(d,rates){
+    const root=document.getElementById('nukeContent');
+    if(!d.nuke.unlocked){root.innerHTML=`<div class="card nuke-locked"><div class="lock">🔒</div><h2>Nuke lab locked</h2><p class="hint">Buy the Nuclear Bomb in the Shop for ${moneyFmt(bombCost(BOMBS[7]))} to unlock the permanent Nuke lab.</p><button class="primary" data-goto="shop">Go to the bomb shop</button></div>`;return;}
+    const n=d.nuke,count=n.quantity*bulkLaunches(d),cost=nukeLaunchCost(d)*count;
+    root.innerHTML=`<div class="grid-main"><div class="card play-card" style="min-height:300px"><div class="eyebrow">The extremely fictional Nuke</div><div class="mascot">☢️</div><h2>France-o-matic 3000</h2><p>Yield: ${fmt(rates.perClick)} France Nuked per Nuke · batch ×${fmt(count)} · ${moneyFmt(nukeLaunchCost(d))} per Nuke</p><button class="primary" id="launchNuke" ${d.money<cost?'disabled':''}>Launch ${fmt(count)} Nuke${count===1?'':'s'} · ${moneyFmt(cost)} · +${fmt(rates.perClick*count)} 🇫🇷</button><p class="hint">Every successful Nuke costs Money. No Money, no launch.</p></div><div class="card"><div class="card-head"><div><div class="eyebrow">Nuke status</div><h2>Progress report</h2></div><span class="tag">LEVEL ${n.level+1}</span></div><div class="stats-stack"><div class="stat-line"><span>France Nuked per Nuke</span><strong>${fmt(rates.perClick)}</strong></div><div class="stat-line"><span>Nukes per batch</span><strong>${fmt(count)}</strong></div><div class="stat-line"><span>Launch cost per batch</span><strong>${moneyFmt(cost)}</strong></div><div class="stat-line"><span>Auto Nuke rate</span><strong>${fmt(rates.autoLaunches)} launches/sec</strong></div><div class="stat-line"><span>Auto Nuke Money cost (up to)</span><strong>${moneyFmt(nukeLaunchCost(d)*count*rates.autoLaunches)} / sec</strong></div><div class="stat-line"><span>Run France Nuked</span><strong>${fmt(d.runFrance)}</strong></div></div><p class="hint" style="margin-top:13px">Power follows 1 → 2 → 10 → 100, then scales ×${fmt(NUKE_BALANCE.powerScale)}. Nuke Speed increases Auto Nuke cadence; Auto Nuke still pays the full launch cost.</p></div></div><div class="section-title" style="margin-top:20px"><div><h2>Nuke upgrades</h2><p>Payload upgrades use France Nuked. Launch economy upgrades use Money.</p></div></div>${nukeUpgradeCards(d)}`;
+  }
+  function renderPrestige(){
+    const root=document.getElementById('prestigeUpgrades');
+    root.innerHTML=PERKS.map(p=>{const level=perkLevel(p.id),cost=perkPrice(p,level),max=level>=p.max;return `<article class="item"><div class="item-top"><span class="item-icon">${p.icon}</span><div><div class="eyebrow">${p.category}</div><div class="item-title">${p.name} <span class="hint">Lv. ${level}/${p.max}</span></div></div></div><div class="item-desc">${p.desc}<br><span style="color:var(--purple)">${p.effect}</span></div><div class="item-meta"><span>${max?'MAX LEVEL':'Next level'}</span><strong class="${max?'owned':'cost'}">${max?'MAX':cost+' 🌌'}</strong></div><button class="secondary full" data-perk="${p.id}" ${max||state.shards<cost?'disabled':''}>${max?'Fully upgraded':'Upgrade · '+cost+' Shards'}</button></article>`;}).join('');
+    renderAchievementList();
+  }
+  function renderAchievementList(){
+    const unlocked=state.achievements;
+    document.getElementById('achievementBox').innerHTML=`<div class="card" style="margin-top:17px"><div class="card-head"><div><div class="eyebrow">A little validation</div><h2>Achievements · ${unlocked.length}/${ACHIEVEMENTS.length}</h2></div></div><div class="achievement-list">${ACHIEVEMENTS.map(a=>`<div class="achievement ${unlocked.includes(a.id)?'':'locked'}"><span class="badge">${a.icon}</span><div><strong>${a.name}</strong><small>${a.desc}</small></div></div>`).join('')}</div></div>`;
+  }
+  function renderDimensions(){
+    document.getElementById('dimensionList').innerHTML=DIMENSIONS.map(def=>{
+      const unlocked=state.unlocked.includes(def.id),d=state.dimensions[def.id],price=dimensionPrice(def),selected=def.id===state.active;
+      return `<article class="item dimension-card ${selected?'selected':''}"><div class="item-top"><span class="dim-icon">${def.icon}</span><div><div class="dim-title">${def.name} ${selected?'<span class="tag">ACTIVE</span>':''}</div><div class="hint">${def.mood}</div></div></div><div class="item-desc">Money: ${fmt(d.money)} · France Nuked: ${fmt(d.france)}<br>Bombs: ${d.bombs.length}/8 · Run: ${fmt(d.runFrance)} France Nuked</div><div class="item-meta"><span>${unlocked?'Status':'Unlock price'}</span><strong class="${unlocked?'owned':'cost'}">${unlocked?(selected?'CURRENT DIMENSION':'UNLOCKED'):fmt(price)+' 🌌'}</strong></div>${unlocked?`<button class="${selected?'secondary':'primary'} full" data-switch="${def.id}" ${selected?'disabled':''}>${selected?'Currently visiting':'Travel to '+def.name}</button>`:`<button class="primary full" data-dim="${def.id}" ${state.shards<price?'disabled':''}>Unlock · ${fmt(price)} Shards</button>`}</article>`;
+    }).join('');
+  }
+  function tick(){
+    const now=Date.now(),dt=Math.max(0,Math.min(1,(now-lastTick)/1000));lastTick=now;const d=active();
+    if(dt>0){
+      advanceDimension(d,dt);
+      if(d.local.autobuyer&&d.autoBuy){const next=BOMBS.find(b=>!d.bombs.includes(b.id));if(next&&d.money>=bombCost(next))buyBomb(next.id);}
+      checkAchievements();
+    }
+    saveTimer+=dt;if(saveTimer>=10){saveTimer=0;save();}
+    updateHUD();
+  }
+  document.addEventListener('click',e=>{
+    const t=e.target.closest('button');if(!t)return;
+    if(t.dataset.amount){
+      purchaseMode=t.dataset.amount==='max'?'max':Number(t.dataset.amount);
+      document.querySelectorAll('.purchase-mode').forEach(button=>button.classList.toggle('active',button===t));
+      render();
+    }
+    if(t.dataset.shopCategory){
+      document.querySelectorAll('.shop-tab').forEach(button=>button.classList.toggle('active',button===t));
+      document.querySelectorAll('.shop-panel').forEach(panel=>panel.classList.toggle('active',panel.id==='shop-'+t.dataset.shopCategory));
+    }
+    if(t.dataset.buy)buyBomb(t.dataset.buy);
+    if(t.dataset.use)useBomb(t.dataset.use,t);
+    if(t.id==='launchNuke')useNuke();
+    if(t.dataset.local)buyLocal(t.dataset.local);
+    if(t.dataset.shopUpgrade)buyShopUpgrade(t.dataset.shopUpgrade);
+    if(t.dataset.nuke)buyNuke(t.dataset.nuke);
+    if(t.dataset.perk)buyPerk(t.dataset.perk);
+    if(t.dataset.dim)unlockDimension(t.dataset.dim);
+    if(t.dataset.switch)switchDimension(t.dataset.switch);
+    if(t.dataset.goto){document.querySelector(`.tab[data-tab="${t.dataset.goto}"]`).click();}
+  });
+  document.querySelectorAll('.tab').forEach(t=>t.addEventListener('click',()=>{document.querySelectorAll('.tab').forEach(x=>x.classList.toggle('active',x===t));document.querySelectorAll('.view').forEach(v=>v.classList.toggle('active',v.id==='view-'+t.dataset.tab));}));
+  function resetWithFrenchLanguage(){
+    state=freshState();language='en';purchaseMode=1;manualClickTimes=[];lastTick=Date.now();saveTimer=0;
+    const selector=document.getElementById('languageSelect');selector.value='en';
+    document.querySelectorAll('.purchase-mode').forEach(button=>button.classList.toggle('active',button.dataset.amount==='1'));
+    document.querySelectorAll('.tab').forEach(button=>button.classList.toggle('active',button.dataset.tab==='main'));
+    document.querySelectorAll('.view').forEach(view=>view.classList.toggle('active',view.id==='view-main'));
+    document.querySelectorAll('.shop-tab').forEach(button=>button.classList.toggle('active',button.dataset.shopCategory==='bombs'));
+    document.querySelectorAll('.shop-panel').forEach(panel=>panel.classList.toggle('active',panel.id==='shop-bombs'));
+    let resetSaved=true;
+    try{localStorage.removeItem(SAVE_KEY);localStorage.setItem(LANGUAGE_KEY,'en');}
+    catch(e){resetSaved=false;console.error('Could not persist the French language reset:',e);}
+    render();if(!save())resetSaved=false;
+    toast(resetSaved?'French selected. Game progress reset; English is active.':'French selected. Progress reset for this session, but could not be saved.');
+  }
+  document.getElementById('languageSelect').value=language;
+  document.getElementById('languageSelect').addEventListener('change',event=>{
+    if(event.currentTarget.value==='fr'){resetWithFrenchLanguage();return;}
+    language=event.currentTarget.value==='microwave'?'microwave':'en';
+    try{localStorage.setItem(LANGUAGE_KEY,language);}
+    catch(e){console.error('Could not save language preference:',e);toast('Language changed, but the preference could not be saved.');}
+    render();
+  });
+  const languageObserver=new MutationObserver(applyLanguage);
+  languageObserver.observe(document.body,{subtree:true,childList:true,characterData:true,attributes:true,attributeFilter:['aria-label','title','placeholder']});
+  applyLanguage();
+  document.getElementById('autoBuyToggle').addEventListener('click',()=>{if(!active().local.autobuyer)return;active().autoBuy=!active().autoBuy;toast('Auto-buy '+(active().autoBuy?'enabled':'disabled')+'.');render();save();});
+  document.getElementById('prestigeBtn').addEventListener('click',()=>{const gain=shardsEarned();if(gain<1)return;document.getElementById('modalText').textContent=`You will receive ${fmt(gain)} Reality Shards. This resets ${dimDef(state.active).name}'s Money, France Nuked, bombs, and local Money/Nuke upgrades. Its Nuke lab unlock, other dimensions, and permanent progress are untouched.`;document.getElementById('modal').classList.add('show');});
+  document.getElementById('cancelPrestige').addEventListener('click',()=>document.getElementById('modal').classList.remove('show'));
+  document.getElementById('confirmPrestige').addEventListener('click',doPrestige);
+  document.getElementById('modal').addEventListener('click',e=>{if(e.target.id==='modal')e.currentTarget.classList.remove('show');});
+  document.getElementById('soundBtn').addEventListener('click',()=>{soundOn=!soundOn;render();if(soundOn)beep();});
+  window.addEventListener('beforeunload',save);
+  document.addEventListener('visibilitychange',()=>{if(document.hidden)save();else lastTick=Date.now();});
+  if(loadError)toast('Save data could not be read. A fresh game has started.');
+  checkAchievements();render();setInterval(tick,250);
+})();
+</script>
+</body>
+</html>
